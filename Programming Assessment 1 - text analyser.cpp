@@ -17,8 +17,8 @@ void generateSummary(const std::string& filename) { // declaring function, void 
     int numberOfWords = 0;
     std::vector<std::pair<std::string, int>> wordList; //vector creates array of pairs called wordList. Each pair containing a string and an integar
 
-    std::string line, word;
-    while (getline(inFile, line)) {
+    std::string line, word; //declares two strings
+    while (getline(inFile, line)) { //loops through line by line
         // Count sentences based on '.', '!', '?'
         numberOfSentences += std::count_if(line.begin(), line.end(), [](char c) {
             return c == '.' || c == '!' || c == '?';
