@@ -1,20 +1,57 @@
-// Programming Assessment 1 - text analyser.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+#include <vector>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
 
-int main()
-{
-    std::cout << "Hello World!\n";
+
+
+void generateSummary(const std::string& filename) { // declaring function, void returns result, & passes by reference
+    std::ifstream inFile(filename); // attempts to open file with the location of value filename
+    if (!inFile.is_open()) { 
+        std::cerr << "That doesn't exist." << std::endl;
+        return; // check if opening the file worked and give an error otherwise. Return exits the function
+    }
+
+    int numberOfSentences = 0;
+    int numberOfWords = 0;
+    std::vector<std::pair<std::string, int>> wordList; //vector creates array of pairs called wordList. Each pair containing a string and an integar
+
+    std::string line, word;
+    while (getline(inFile, line)) {
+        // Count sentences based on '.', '!', '?'
+        numberOfSentences += std::count_if(line.begin(), line.end(), [](char c) {
+            return c == '.' || c == '!' || c == '?';
+            });
+
+        std::istringstream iss(line);
+        while (iss >> word) {
+            numberOfWords++;
+            bool found = false;
+            for (auto& pair : wordList) {
+                if (pair.first == word) {
+                    pair.second++;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) wordList.push_back({ word, 1 });
+        }
+    }
+
+    std::cout << "Number of sentences: " << numberOfSentences << std::endl;
+    std::cout << "Number of words: " << numberOfWords << std::endl;
+
+    for (const auto& pair : wordList) {
+        double frequency = static_cast<double>(pair.second) / numberOfWords;
+        std::cout << "Word: " << pair.first << ", Count: " << pair.second << ", Frequency: " << frequency << std::endl;
+    }
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+int main() {
+    std::string filename;
+    std::cout << "Enter the filename: ";
+    std::cin >> filename;
+    generateSummary(filename);
+    return 0;
+}
